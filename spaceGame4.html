@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+        <link rel="stylesheet" type="text/css" href="spaceGame.css">
+
+  </head>
+  <body>
+    <div class = "ast" id = "ast1"><img src = "asteroid.svg" width="200" height="200"></div>
+    <script>
+     var image = document.getElementById("ast1");
+     var imageLeft = 0;
+     function move(){
+     	imageLeft++;
+     	image.style.left = imageLeft + "px";
+
+ 		}
+ setInterval(move, 0);
+ </script>
+  </body>
+  </html>
