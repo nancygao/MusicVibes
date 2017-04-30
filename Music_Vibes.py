@@ -173,7 +173,9 @@ def listen():
         elif data == b'\x04':
             byte = conn.recv(1)
             set_power(ser, byte)
-        elif data==b'\xFF' or data == b'':
+        elif data == b'':
+            conn, addr = s.accept()
+        elif data==b'\xFF':
             break
 
     ser_term(ser)
