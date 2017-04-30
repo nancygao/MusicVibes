@@ -15,8 +15,10 @@
      <source src="http://www.televisiontunes.com/uploads/audio/Star%20Wars.mp3" />     
  </audio>
 
-<canvas id="myCanvas" style="background-image:url('http://www.wallpapercave.com/wp/kSQdCxM.jpg');
-							 background-size: cover;"></canvas>
+	 <canvas id="myCanvas" style="background-image:url('http://www.wallpapercave.com/wp/kSQdCxM.jpg');
+							 background-size: cover;"></canvas> 
+
+
 
 <script>
 
@@ -37,14 +39,22 @@
 	//fetching asteroid image and caching to decrease latency
 	var asteroid = new Image();
 	var is_asteroid_cached = false;
+	var fire = new Image();
+
 	asteroid.onload = function() {
 		if(!is_asteroid_cached){
-			is_asteroid_cached = true;
-			startMainRoutine();
-			setSpawnRate();
+			fire.onload = function() {
+				is_asteroid_cached = true;
+				startMainRoutine();
+				setSpawnRate();
+			}
 		}
 	}
-	asteroid.src = "http://vignette3.wikia.nocookie.net/astroempires/images/6/62/Astro_Asteroid_medium.png/revision/latest?cb=20110617211703";
+
+	asteroid.src = "asteroid.png";
+	fire.src = "explosion.png";
+
+
 
 	//set boundary for asteroid detection
 	var asteroid_y_boundary = ctx.canvas.height*0.92;
@@ -60,6 +70,7 @@
 	FallingAsteroid = function(prop){
       this.x = rand(ctx.canvas.width*.05, ctx.canvas.width*.95);
       this.y = 0;
+      this.isDestroyed = false;
       this.h = asteroid_height;
       this.w = asteroid_width;
       this.angle = rand(0, 360);
@@ -87,6 +98,7 @@
 	  ctx.rotate(this.angle * RAD);  // rotate around that point
 	  ctx.drawImage(this.asteroid_image, -(this.asteroid_image.width/2), -(this.asteroid_image.height/2));
 	  ctx.restore();
+
 	  ctx.save();
 	  ctx.translate(this.x, this.y);
 	  ctx.font = "40pt Calibri";
@@ -100,7 +112,21 @@
 
 	function spawnNewAsteroid() {
 		newFallingAsteroid = new FallingAsteroid();
+		callArduinoMotor(newFallingAsteroid.letter);
 		asteroids.push(newFallingAsteroid);
+	}
+
+
+	function callArduinoMotor(letter) {
+
+
+		//opened server on {"address":"127.0.0.1","family":"IPv4","port":1337}
+
+		switch (letter) {
+			case "L":
+
+				break;
+		}
 	}
 
 	//random number generator
@@ -133,7 +159,32 @@
 	    ctx.fillText("Score: " + score , ctx.canvas.width*.05, asteroid_y_boundary*.06);
 	    ctx.restore();
 	    ctx.fillStyle = "#FFF";
-		
+	}
+
+	function drawFire(targetAsteroid) {
+		//asteroids.splice(targetDeletion, 1);
+		ctx.save(); 
+		ctx.beginPath();
+		ctx.drawImage(fire, targetAsteroid.x, targetAsteroid.y, targetAsteroid.w*2, targetAsteroid.h*2);
+		ctx.fill();
+		ctx.closePath();
+		setTimeout(eraseExplosion, 500, targetAsteroid);
+		ctx.restore();
+	}
+
+	function eraseExplosion(targetAsteroid) {
+		ctx.clearRect(targetAsteroid.x, targetAsteroid.y, targetAsteroid.w*2, targetAsteroid.h*2);
+		var targetDeletion = -1;
+		for(i in asteroids) {
+			if(targetAsteroid == asteroids[i]) {
+				targetDeletion = i;
+				break;
+			}
+		}
+
+		if(targetDeletion != -1) {
+			asteroids.splice(targetDeletion, 1);
+		}
 	}
 
 	//main game thread
@@ -150,8 +201,15 @@
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
 		drawBoundary();
 		drawScore();
+		var deletedAsteroids = -1;
 		for(i in asteroids) {
-			asteroids[i].drop();
+			if(!asteroids[i].isDestroyed) {
+				asteroids[i].drop();
+			} else {
+				var targetAsteroid = asteroids[i];
+				drawFire(targetAsteroid);
+				deletedAsteroids = i;
+			}
 		}
 	}
 
@@ -163,19 +221,15 @@
 			var letter_asteroid_collisions;
 
 			for(i in asteroids) {
-				if(asteroids[i].letter == letterPressed) {
-					letter_asteroid_collisions = asteroids[i]
+				if(asteroids[i].letter == letterPressed && !asteroids[i].isDestroyed) {
+					asteroids[i].isDestroyed = true;
+					score+=1
 					break;
 				}
+
 			}
 
-			var targetAsteroid = asteroids.indexOf(letter_asteroid_collisions);
-			if(targetAsteroid > -1) {
-				asteroids.splice(targetAsteroid, 1);
-				score+=1;
-			}
-
-			redraw();
+			//redraw();
 		}
 
 	}
