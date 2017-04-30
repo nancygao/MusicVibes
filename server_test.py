@@ -11,9 +11,12 @@ def listen():
     conn, addr = s.accept()
     while 1:
         data = conn.recv(1)
-        print(data)
-        if data==b'\xFF' or data == b'':
+        if data!=b'':
+            print(data)
+        if data==b'\xFF':
             break
+        elif data == b'':
+            conn, addr = s.accept()
     s.close()
 
 listen()
