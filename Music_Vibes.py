@@ -49,16 +49,16 @@ my_dict['left']= {6}
 my_dict['up_left']= {7}
 my_dict['clear'] = {}
 
-my_dict['0']= {0}
-my_dict['1']= {1}
-my_dict['2']= {2}
-my_dict['3']= {3}
-my_dict['4']= {4}
-my_dict['5']= {5}
-my_dict['6']= {6}
-my_dict['7']= {7}
+my_dict['7']= {0}
+my_dict['8']= {1}
+my_dict['9']= {2}
+my_dict['6']= {3}
+my_dict['3']= {4}
+my_dict['2']= {5}
+my_dict['1']= {6}
+my_dict['4']= {7}
 
-my_dict['8'] = {0,1,2,3,4,5,6,7}
+my_dict['5'] = {0,1,2,3,4,5,6,7}
 
 new_dict = {}
 for a in my_dict.keys():
