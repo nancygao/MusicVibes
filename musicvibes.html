@@ -25,8 +25,8 @@
 	//global constants
 	var RAD = Math.PI/180;
 	var KEY_SET = ["←", "↑", "→", "↓"]
-	var KEY_MAPPING = { 52:"←", 56:"↑", 54:"→", 50:"↓"};
-	//left=4 : up=8 : right:6 : down:2
+	var KEY_MAPPING = { 52:"←",37:"←", 56:"↑", 38:"↑", 54:"→",39:"→", 50:"↓",40:"↓"};
+	//left=4 : up=8 : right:6 : down:2 ** arrow keys will also work
 
 	//fetch and adjust canvas context, also bind keylisteners and difficulty setting
 	var canvas = document.getElementById("myCanvas");
@@ -113,21 +113,68 @@
 
 	function spawnNewAsteroid() {
 		newFallingAsteroid = new FallingAsteroid();
-		callArduinoMotor(newFallingAsteroid.letter);
+		// callArduinoMotor(newFallingAsteroid.letter);
 		asteroids.push(newFallingAsteroid);
 	}
 
 
-	function callArduinoMotor(letter) {
+	// function callArduinoMotor(letter) {
 
 
-		//opened server on {"address":"127.0.0.1","family":"IPv4","port":1337}
+	// 	//opened server on {"address":"127.0.0.1","family":"IPv4","port":1337}
 
-		switch (letter) {
-			case "L":
+	// 	switch (letter) {
+	// 		case "L":
 
+	// 			break;
+	// 	}
+	// }
+
+	function characterToArduino(letter){
+		var character = null;
+
+		switch(letter){
+			case '←':
+				character = '4';
+				break;
+			case '↑':6
+				character = '8';
+				break;
+			case '→':
+				character = '6';
+				break;
+			case '↓':
+				character = '2';
 				break;
 		}
+		return character;
+	}
+
+	function my_send(x){
+	    var xhttp = new XMLHttpRequest();
+	    xhttp.open("GET", "Music_Vibes.php"+x, true);
+	    xhttp.send();
+	}
+	function send_one(x){
+	    my_send("?Mode=One&Data="+x);
+	}
+	function send_term(){
+	    my_send("?Mode=Term");
+	}
+	function set_power(x){
+	    my_send("?Mode=Strength&Data="+x);
+	}
+	function send_init(x, y){
+	    my_send("?Mode=Init&Data="+x+y);
+	}
+	function send_push(x){
+	    my_send("?Mode=Push&Data="+x);
+	}
+	function send_lower(x){
+	    my_send("?Mode=Lower&Data="+x);
+	}
+	function send_clear(){
+	    my_send("?Mode=Clear");
 	}
 
 	//random number generator
