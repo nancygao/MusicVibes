@@ -7,7 +7,7 @@
 
     <style>
     	* { padding: 0; margin: 0; }
-    	/*canvas { background: #eee; display: block; margin: 0 auto; }*/
+    	canvas { background: #eee; display: block; margin: 0 auto; }
     </style>
 
 </head>
@@ -40,10 +40,9 @@
 
 	//global constants
 	var RAD = Math.PI/180;
-	var KEY_SET = ["←", "↑", "→", "↓"];
-	var KEY_MAPPING = { 52:"←",37:"←", 56:"↑", 38:"↑", 54:"→",39:"→", 50:"↓",40:"↓"};
-	//var KEY_SET = null;
-	//var KEY_MAPPING = null;
+	
+	var KEY_SET = null;
+	var KEY_MAPPING = null;
 	//left=4 : up=8 : right:6 : down:2 ** arrow keys will also work
 
 	//fetch and adjust canvas context, also bind keylisteners and difficulty setting
@@ -60,28 +59,40 @@
 	var is_asteroid_cached = false;
 	var fire = new Image();
 
+	var readyToPlay = false;
 
 	$(document).ready(function(){
+
 
 		$("#myCanvas").hide();
 
 		$("#getstarted-btn").click(function() {
 			$("div#container").hide();
 			$("canvas#myCanvas").show();
-		// var KEY_SET = ["←", "↑", "→", "↓"];
-		// var KEY_MAPPING = [52:"←",37:"←", 56:"↑", 38:"↑", 54:"→",39:"→", 50:"↓",40:"↓"];
-
-
+			KEY_SET = ["←", "↑", "→", "↓", "↖", "↗" ,"↘", "↙"];
+			KEY_MAPPING = { 52:"←",37:"←", 56:"↑", 38:"↑", 54:"→",39:"→", 50:"↓",40:"↓",
+							55:"↖",57:"↗",51:"↘",49:"↙"};
+			readyToPlay = true;
 		});
 
 		$("#demo-btn").click(function() {
 			$("div#container").hide();
 			$("canvas#myCanvas").show();
+			KEY_SET = ["←", "↑", "→", "↓"];
+			KEY_MAPPING = { 52:"←",37:"←", 56:"↑", 38:"↑", 54:"→",39:"→", 50:"↓",40:"↓"};
+			readyToPlay = true;
+
 		});
 
 		$("#braille-btn").click(function() {
 			$("div#container").hide();
 			$("canvas#myCanvas").show();
+			KEY_SET = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q",
+					  "R","S","T","U","V","W","X","Y","Z"];
+			KEY_MAPPING = {65:"A",66:"B",67:"C",68:"D",69:"E",70:"F",71:"G",72:"H",73:"I",74:"J",75:"K",76:"L",77:"M",78:"N",79:"O",80:"P",81:"Q",
+					  82:"R",83:"S",84:"T",85:"U",86:"V",87:"W",88:"X",89:"Y",90:"Z"};
+			readyToPlay = true;
+
 		});
 
 	});
@@ -120,8 +131,10 @@
       this.w = asteroid_width;
       this.angle = rand(0, 360);
       this.speed = rand(1, 1);
-      this.letter = KEY_SET[rand(0,3)];
-      this.asteroid_image = asteroid;
+      this.letter = KEY_SET[rand(0,KEY_SET.length-1)];
+      if (readyToPlay=true){
+      	 this.asteroid_image = asteroid;
+      }
       return this;
     };
 
