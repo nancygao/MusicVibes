@@ -49,14 +49,14 @@ my_dict['left']= {6}
 my_dict['up_left']= {7}
 my_dict['clear'] = {}
 
-my_dict['7']= {0}
-my_dict['8']= {1}
-my_dict['9']= {2}
-my_dict['6']= {3}
-my_dict['3']= {4}
-my_dict['2']= {5}
-my_dict['1']= {6}
-my_dict['4']= {7}
+my_dict['8']= {0}
+my_dict['9']= {1}
+my_dict['6']= {2}
+my_dict['3']= {3}
+my_dict['2']= {4}
+my_dict['1']= {5}
+my_dict['4']= {6}
+my_dict['7']= {7}
 
 my_dict['5'] = {0,1,2,3,4,5,6,7}
 
@@ -102,23 +102,51 @@ def ser_push(ser, byte):
 def ser_term(ser):
     ser.write(b'\x01\x00')
 
+def my_enqueue(ser, my_queue, my_byte):
+    my_queue.append(my_byte)
+    if(len(my_queue)==1):
+        ser_only_one(ser, my_queue[0])
+
+def my_dequeue(ser, my_queue):
+    if len(my_queue)>1:
+        my_queue.pop(0)
+        ser_only_one(ser, my_queue[0])
+    elif len(my_queue)==1:
+        my_queue.pop(0)
+        ser_term(ser)
+    else:
+        ser_term(ser)
+
+def my_dumpqueue(my_queue):
+    global cur_byte
+    while(len(my_queue)>0):
+        my_queue.pop(0)
+        
 def motor_test():
     ser_only_one(ser, new_dict['up'])
-    input()
+    time.sleep(1)
+    #input()
     ser_only_one(ser, new_dict['up_right'])
-    input()
+    time.sleep(1)
+    #input()
     ser_only_one(ser, new_dict['right'])
-    input()
+    time.sleep(1)
+    #input()
     ser_only_one(ser, new_dict['bottom_right'])
-    input()
+    time.sleep(1)
+    #input()
     ser_only_one(ser, new_dict['bottom'])
-    input()
+    time.sleep(1)
+    #input()
     ser_only_one(ser, new_dict['bottom_left'])
-    input()
+    time.sleep(1)
+    #input()
     ser_only_one(ser, new_dict['left'])
-    input()
+    time.sleep(1)
+    #input()
     ser_only_one(ser, new_dict['up_left'])
-    input()
+    time.sleep(1)
+    #input()
     ser_term(ser)
 
 def settings_test():
@@ -133,6 +161,7 @@ def settings_test():
     ser_term(ser)
 
 def listen():
+    byte_queue = []
     TCP_IP = '127.0.0.1'
     TCP_PORT = 9874
     BUFFER_SIZE = 1
@@ -173,6 +202,11 @@ def listen():
         elif data == b'\x04':
             byte = conn.recv(1)
             set_power(ser, byte)
+        elif data == b'\x05':
+            my_enqueue(ser, byte_queue, new_dict[chr(conn.recv(1)[0])])
+            print(byte_queue)
+        elif data == b'\x06':
+            my_dequeue(ser, byte_queue)
         elif data == b'':
             conn, addr = s.accept()
         elif data==b'\xFF':
@@ -181,7 +215,25 @@ def listen():
     ser_term(ser)
     s.close()
 
+def queue_test():
+    byte_queue = []
+    my_enqueue(ser, byte_queue, new_dict['up'])
+    my_enqueue(ser, byte_queue, new_dict['bottom'])
+    my_enqueue(ser, byte_queue, new_dict['left'])
+    my_enqueue(ser, byte_queue, new_dict['right'])
+    input()
+    my_dequeue(ser, byte_queue)
+    input()
+    my_dequeue(ser, byte_queue)
+    input()
+    my_dequeue(ser, byte_queue)
+    input()
+    my_dequeue(ser, byte_queue)
+    input()
+    ser_term(ser)
+
 #motor_test()
 #settings_test()
 listen()
 #ser_term(ser)
+#queue_test()
