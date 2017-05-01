@@ -15,7 +15,7 @@
      <source src="http://www.televisiontunes.com/uploads/audio/Star%20Wars.mp3" />     
  </audio>
 
-	 <canvas id="myCanvas" style="background-image:url('http://www.wallpapercave.com/wp/kSQdCxM.jpg');
+	 <canvas id="myCanvas" style="background-image:url('planet.jpg');
 							 background-size: cover;"></canvas> 
 
 
@@ -53,12 +53,12 @@
 	}
 
 	asteroid.src = "asteroid.png";
-	fire.src = "explosion.png";
+	fire.src = "fireball.png";
 
 
 
 	//set boundary for asteroid detection
-	var asteroid_y_boundary = ctx.canvas.height*0.92;
+	var asteroid_y_boundary = ctx.canvas.height*0.85;
 
 	//setting asteroid attributes and abstractions
 	var sequences_until_explosion = 10;
@@ -184,7 +184,9 @@
 
 	function drawBoundary() {
 		ctx.beginPath();
-		ctx.rect(0, asteroid_y_boundary, ctx.canvas.width, asteroid_y_boundary*.03);
+		//ctx.rect(0, asteroid_y_boundary, ctx.canvas.width, asteroid_y_boundary*.03);
+		ctx.rect(0, asteroid_y_boundary, ctx.canvas.width, .05);
+
 		ctx.fillStyle = "#FFFFFF";
 		ctx.fill();
 		ctx.closePath();
@@ -199,7 +201,7 @@
 		ctx.fill();
 		ctx.closePath();
 		ctx.save();
-		ctx.fillStyle = "#FFF";
+		ctx.fillStyle = "#000";
 		ctx.font = "20pt Calibri";
 		ctx.strokeStyle = "#000";
 		ctx.textBaseline = "top";
@@ -276,7 +278,6 @@
 
 			}
 
-			//redraw();
 		}
 
 	}
