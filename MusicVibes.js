@@ -21,6 +21,15 @@ function send_push(x){
 function send_lower(x){
     my_send("?Mode=Lower&Data="+x);
 }
+
+function send_enqueue(x){
+    my_send("?Mode=Enqueue&Data="+x);
+}
+
+function send_dequeue(){
+    my_send("?Mode=Dequeue");
+}
+
 function send_clear(){
     my_send("?Mode=Clear");
 }

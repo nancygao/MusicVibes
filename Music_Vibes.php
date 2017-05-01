@@ -1,5 +1,5 @@
 <?php
-$checkVars = array("Push", "One", "Init", "Lower", "Strength", "Term", "Clear");
+$checkVars = array("Push", "One", "Init", "Lower", "Strength", "Term", "Clear", "Enqueue", "Dequeue");
 $bytestream = "";
 if(isset($_GET['Mode']) and in_array($_GET['Mode'], $checkVars)){
 	$mode = $_GET['Mode'];
@@ -27,6 +27,15 @@ if(isset($_GET['Mode']) and in_array($_GET['Mode'], $checkVars)){
             $bytestream .= hex2bin("03");
             $bytestream .= $_GET['Data'];
         }
+        break;
+    case "Enqueue":
+        if(isset($_GET['Data']) and $_GET['Data']!=''){
+            $bytestream .= hex2bin("05");
+            $bytestream .= $_GET['Data'];
+        }
+        break;
+    case "Dequeue":
+        $bytestream .= hex2bin("06");
         break;
     case "Strength":
         if(isset($_GET['Data']) and $_GET['Data']!='' and is_numeric($_GET['Data'])){
