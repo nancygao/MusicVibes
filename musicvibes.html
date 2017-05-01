@@ -3,19 +3,35 @@
 <head>
     <meta charset="utf-8" />
     <title>Music Vibes</title>
+	<link rel="stylesheet" type="text/css" href="homepage.css">
+
     <style>
     	* { padding: 0; margin: 0; }
-    	canvas { background: #eee; display: block; margin: 0 auto; }
+    	/*canvas { background: #eee; display: block; margin: 0 auto; }*/
     </style>
+
 </head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
 <body>
+
+	<div id="container">
+          <h1 id="homepage-title">Music Vibes </h1>
+
+          <!--<a id="getstarted-btn" input type="button">Simple Mode</a>-->
+          <input type = "button" class = "button" id="braille-btn" value = "Braille Butt Mode"></input>
+          <input type = "button" class = "button" id="getstarted-btn" value="Simple Mode"></input>
+          <input type = "button" class = "button" id="demo-btn" value = "Demo Mode"></input>
+    </div>
+      
 
 
 <audio autoplay="autoplay" controls loop style="display:none;">
      <source src="http://www.televisiontunes.com/uploads/audio/Star%20Wars.mp3" />     
  </audio>
 
-	 <canvas id="myCanvas" style="background-image:url('planet.jpg');
+<canvas id="myCanvas" style="background-image:url('planet.jpg');
 							 background-size: cover;"></canvas> 
 
 
@@ -24,8 +40,10 @@
 
 	//global constants
 	var RAD = Math.PI/180;
-	var KEY_SET = ["←", "↑", "→", "↓"]
+	var KEY_SET = ["←", "↑", "→", "↓"];
 	var KEY_MAPPING = { 52:"←",37:"←", 56:"↑", 38:"↑", 54:"→",39:"→", 50:"↓",40:"↓"};
+	//var KEY_SET = null;
+	//var KEY_MAPPING = null;
 	//left=4 : up=8 : right:6 : down:2 ** arrow keys will also work
 
 	//fetch and adjust canvas context, also bind keylisteners and difficulty setting
@@ -41,6 +59,32 @@
 	var asteroid = new Image();
 	var is_asteroid_cached = false;
 	var fire = new Image();
+
+
+	$(document).ready(function(){
+
+		$("#myCanvas").hide();
+
+		$("#getstarted-btn").click(function() {
+			$("div#container").hide();
+			$("canvas#myCanvas").show();
+		// var KEY_SET = ["←", "↑", "→", "↓"];
+		// var KEY_MAPPING = [52:"←",37:"←", 56:"↑", 38:"↑", 54:"→",39:"→", 50:"↓",40:"↓"];
+
+
+		});
+
+		$("#demo-btn").click(function() {
+			$("div#container").hide();
+			$("canvas#myCanvas").show();
+		});
+
+		$("#braille-btn").click(function() {
+			$("div#container").hide();
+			$("canvas#myCanvas").show();
+		});
+
+	});
 
 	asteroid.onload = function() {
 		if(!is_asteroid_cached){
@@ -117,18 +161,6 @@
 		asteroids.push(newFallingAsteroid);
 	}
 
-
-	// function callArduinoMotor(letter) {
-
-
-	// 	//opened server on {"address":"127.0.0.1","family":"IPv4","port":1337}
-
-	// 	switch (letter) {
-	// 		case "L":
-
-	// 			break;
-	// 	}
-	// }
 
 	function characterToArduino(letter){
 		var character = null;

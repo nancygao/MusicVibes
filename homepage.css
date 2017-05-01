@@ -18,7 +18,7 @@ body {
 	overflow: hidden;
 }
 
-div.container {
+#container {
 	background: url('http://www.wallpapercave.com/wp/kSQdCxM.jpg');
 	background-size: cover;
 	width: 100%;
@@ -27,28 +27,55 @@ div.container {
 	text-align: center;
 }
 
-div.container a.getstarted-btn {
+#getstarted-btn {
     position: absolute;
     margin-top: 10%;
     margin-left: -9%;
     margin-bottom: auto;
+    background: linear-gradient(45deg, rgba(255,184,115,0.65) 0%,rgba(255,124,189,0.65) 50%,rgba(108,0,153,0.65) 100%);
+    border-radius: 2px;
+    box-shadow: 0px 2px 4px rgba(34,62,66,.25);
+    color: #fff;
+    font-size: 18px;
+    letter-spacing: 1px;
+    padding: 16px 32px;
+    text-decoration: none;
+    text-transform: uppercase;
 }
 
-div.container a.demo-btn {
+#demo-btn {
     position: absolute;
     margin-top: 10%;
     margin-left: 15%;
     margin-bottom: auto;
+    background: linear-gradient(45deg, rgba(255,184,115,0.65) 0%,rgba(255,124,189,0.65) 50%,rgba(108,0,153,0.65) 100%);
+    border-radius: 2px;
+    box-shadow: 0px 2px 4px rgba(34,62,66,.25);
+    color: #fff;
+    font-size: 18px;
+    letter-spacing: 1px;
+    padding: 16px 32px;
+    text-decoration: none;
+    text-transform: uppercase;
 }
 
 
-div.container a.braille-btn {
+#braille-btn {
     position: absolute;
     margin-top: 10%;
     margin-left: -38%;
     margin-bottom: auto;
+    background: linear-gradient(45deg, rgba(255,184,115,0.65) 0%,rgba(255,124,189,0.65) 50%,rgba(108,0,153,0.65) 100%);
+    border-radius: 2px;
+    box-shadow: 0px 2px 4px rgba(34,62,66,.25);
+    color: #fff;
+    font-size: 18px;
+    letter-spacing: 1px;
+    padding: 16px 32px;
+    text-decoration: none;
+    text-transform: uppercase
 }
-div.container h1 {
+#homepage-title {
   color: #fff;
   font-family: "Blender","Helvetica Neue", serif;
   opacity:.70;
@@ -63,61 +90,32 @@ div.container h1 {
   margin-right: auto;
 }
 
-a.getstarted-btn {
-	background: linear-gradient(45deg, rgba(255,184,115,0.65) 0%,rgba(255,124,189,0.65) 50%,rgba(108,0,153,0.65) 100%);
-	border-radius: 2px;
-	box-shadow: 0px 2px 4px rgba(34,62,66,.25);
-  color: #fff;
-  font-size: 18px;
-  letter-spacing: 1px;
-  padding: 16px 32px;
-  text-decoration: none;
-  text-transform: uppercase;
-  -webkit-transition: box-shadow 1s ease;
-	transition: box-shadow 1s ease;
+.button{
+      background: linear-gradient(45deg, rgba(255,184,115,0.65) 0%,rgba(255,124,189,0.65) 50%,rgba(108,0,153,0.65) 100%);
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      border: none;
 }
 
-a.getstarted-btn:hover {
+#getstarted-btn:hover {
 	box-shadow: 0px 4px 4px rgba(34,62,66,.5);
 	-webkit-transition: box-shadow 1s ease;
 	transition: box-shadow 1s ease;
 }
 
-a.demo-btn {
-  background: linear-gradient(45deg, rgba(255,184,115,0.65) 0%,rgba(255,124,189,0.65) 50%,rgba(108,0,153,0.65) 100%);
-  border-radius: 2px;
-  box-shadow: 0px 2px 4px rgba(34,62,66,.25);
-  color: #fff;
-  font-size: 18px;
-  letter-spacing: 1px;
-  padding: 16px 32px;
-  text-decoration: none;
-  text-transform: uppercase;
-  -webkit-transition: box-shadow 1s ease;
-  transition: box-shadow 1s ease;
-}
 
-a.demo-btn:hover {
+#demo-btn:hover {
   box-shadow: 0px 4px 4px rgba(34,62,66,.5);
   -webkit-transition: box-shadow 1s ease;
   transition: box-shadow 1s ease;
 }
 
-a.braille-btn {
-  background: linear-gradient(45deg, rgba(255,184,115,0.65) 0%,rgba(255,124,189,0.65) 50%,rgba(108,0,153,0.65) 100%);
-  border-radius: 2px;
-  box-shadow: 0px 2px 4px rgba(34,62,66,.25);
-  color: #fff;
-  font-size: 18px;
-  letter-spacing: 1px;
-  padding: 16px 32px;
-  text-decoration: none;
-  text-transform: uppercase;
-  -webkit-transition: box-shadow 1s ease;
-  transition: box-shadow 1s ease;
-}
 
-a.braille-btn:hover {
+#braille-btn:hover {
   box-shadow: 0px 4px 4px rgba(34,62,66,.5);
   -webkit-transition: box-shadow 1s ease;
   transition: box-shadow 1s ease;
