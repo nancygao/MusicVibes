@@ -64,6 +64,8 @@
 	var asteroid = new Image();
 	var is_asteroid_cached = false;
 	var fire = new Image();
+	var star = new Image();
+	var earth = new Image();
 
 	//sound effects
 	var successSound = new Audio('explosionSound.wav');
@@ -74,7 +76,7 @@
 
 	//Falling asteroid class
 	FallingAsteroid = function(prop){
-      this.x = rand(ctx.canvas.width*.05, ctx.canvas.width*.95);
+      this.x = rand((ctx.canvas.width*.02)+(star.width*.3), ctx.canvas.width*.95);
       this.y = 0;
       this.isDestroyed = false;
       this.h = asteroid_height;
@@ -105,13 +107,11 @@
 	  			gameOverMessage.globalCompositeOperation="destination-over";
 	  			gameOverMessage.fillStyle = "red"; 
 	  			gameOverMessage.fillText("GAME OVER", canvas.width/8.6, canvas.height/2);
-
-
 	  	}
 
 	  	this.y = 0; // restart from top
 	    this.x = rand(ctx.canvas.width*.05, ctx.canvas.width*.95); // new X position
-	    this.speed = rand(1, 4); // new random speed
+	    this.speed = 1; 
 	  }
 
 	  this.y += this.speed;
@@ -181,6 +181,10 @@
 
 	asteroid.src = "asteroid.png";
 	fire.src = "fireball.png";
+	star.src = "bright2.png";
+	earth.src = "earth.png";
+
+
 
 
 
@@ -270,23 +274,34 @@
 		ctx.closePath();
 	}
 
+	earth.width = 100;
+	earth.height = 100;
+
+	function drawHome() {
+		ctx.beginPath();
+		ctx.drawImage(earth, canvas.width*.87, canvas.width*.01 , earth.width, earth.height);
+		ctx.closePath();
+		ctx.save();
+		ctx.fillStyle = "#FFF";
+		ctx.font = "20pt Calibri";
+		ctx.strokeStyle = "#FFF";
+		ctx.textBaseline = "middle";
+		//ctx.lineWidth = 0.1;
+	    ctx.fillText("Home", canvas.width*.88, (canvas.width*.01+earth.height/2));
+	    ctx.restore();
+	    ctx.fillStyle = "#FFF";
+	}
+
 	function drawScore() {
 		ctx.beginPath();
-		ctx.rect(ctx.canvas.width*.02, asteroid_y_boundary*.05, 
-			ctx.canvas.width*.15, asteroid_y_boundary*.1);
-		ctx.fillStyle = "#86A7C4";
-
-		ctx.fill();
+		ctx.drawImage(star, canvas.width*.017, canvas.width*.012, star.width*.4, star.height*.4);
 		ctx.closePath();
 		ctx.save();
 		ctx.fillStyle = "#000";
-		ctx.font = "20pt Calibri";
+		ctx.font = "bold 28pt Calibri";
 		ctx.strokeStyle = "#000";
-		ctx.textBaseline = "top";
-		ctx.lineWidth = 0.1;
-	    ctx.fillText("Score: " + score , ctx.canvas.width*.05, asteroid_y_boundary*.06);
-	    ctx.fillText("Lives Left: " + 3-strikes , ctx.canvas.width*.05, asteroid_y_boundary*.02);
-
+		ctx.textBaseline = "middle";
+	    ctx.fillText("Score: " + score , ctx.canvas.width*.02+ star.width*.09,asteroid_y_boundary*.02+star.height*.2, star.width*.18);
 	    ctx.restore();
 	    ctx.fillStyle = "#FFF";
 	}
@@ -332,6 +347,7 @@
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); 
 		drawBoundary();
 		drawScore();
+		drawHome();
 		var deletedAsteroids = -1;
 		for(i in asteroids) {
 			if(!asteroids[i].isDestroyed) {
