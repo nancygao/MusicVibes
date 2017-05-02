@@ -28,7 +28,7 @@
 
 
 <audio autoplay="autoplay" controls loop style="display:none;">
-     <source src="/spaceMusic.mp3"/>     
+     <source src="spaceMusic.mp3"/>     
  </audio>
 
 
@@ -54,6 +54,7 @@
 
 	var isPlaying = false;
 	var isDemoMode = false;
+	var isPaused = false;
 
 	document.addEventListener("keyup", destroyAsteroidAttempt, false);
 	var current_difficulty = 10; //10 is the easiest and 1 is the hardest
@@ -91,7 +92,7 @@
     FallingAsteroid.prototype.drop = function() {
 	  // Manipulate Icon properties
 	  if(this.y > asteroid_y_boundary) { // (if has dropped)
-	  	send_deq();
+	  	send_dequeue();
 	  	failureSound.play();
 	  	strikes+=1
 
@@ -137,6 +138,8 @@
 		$("#myCanvas").hide();
 
 		$("#getstarted-btn").click(function() {
+							asteroids = [];
+
 			$("div#container").hide();
 			$("canvas#myCanvas").show();
 			KEY_SET = ["←", "↑", "→", "↓", "↖", "↗" ,"↘", "↙"];
@@ -147,6 +150,8 @@
 		});
 
 		$("#demo-btn").click(function() {
+			asteroids = [];
+
 			$("div#container").hide();
 			$("canvas#myCanvas").show();
 			KEY_SET = ["←", "↑", "→", "↓"];
@@ -159,6 +164,8 @@
 		$("#braille-btn").click(function() {
 			$("div#container").hide();
 			$("canvas#myCanvas").show();
+			asteroids = [];
+
 			KEY_SET = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
 			KEY_MAPPING = {65:"A",66:"B",67:"C",68:"D",69:"E",70:"F",71:"G",72:"H",73:"I",74:"J",75:"K",76:"L",77:"M",78:"N",79:"O",80:"P",81:"Q",
 					  82:"R",83:"S",84:"T",85:"U",86:"V",87:"W",88:"X",89:"Y",90:"Z"};
@@ -171,11 +178,22 @@
 				score=0;
 				isPlaying=false;
 
-				asteroids.Clear;
+				ctx.clearRect(0,0,canvas.width, canvas.height)
+				asteroids = [];
 				redraw();
 
 		       	$("canvas#myCanvas").hide();
 				$("div#container").show();
+		    }
+			if(e.keyCode == 32){ //space
+		       //isPlaying=false;
+			   	isPaused =!isPaused;
+
+		       	if(isPaused){
+					isPlaying = false;
+		       	} else{
+					isPlaying = true;
+		       	}
 		    }
 		});
 	});
@@ -214,30 +232,9 @@
 
 	function spawnNewAsteroid() {
 		newFallingAsteroid = new FallingAsteroid();
-		send_enq(newFallingAsteroid.letter);
+		send_enqueue(newFallingAsteroid.letter);
 		asteroids.push(newFallingAsteroid);
 	}
-
-
-	// function characterToArduino(letter){
-	// 	var character = null;
-
-	// 	switch(letter){
-	// 		case '←':
-	// 			character = '4';
-	// 			break;
-	// 		case '↑':6
-	// 			character = '8';
-	// 			break;
-	// 		case '→':
-	// 			character = '6';
-	// 			break;
-	// 		case '↓':
-	// 			character = '2';
-	// 			break;
-	// 	}
-	// 	return character;
-	// }
 
 	function my_send(x){
 	    var xhttp = new XMLHttpRequest();
@@ -266,9 +263,52 @@
 	    my_send("?Mode=Clear");
 	}
 
+	function send_enqueue(x){
+    my_send("?Mode=Enqueue&Data="+x);
+	}
+
+	function send_dequeue(){
+	    my_send("?Mode=Dequeue");
+	}
+
 	//random number generator
 	function rand(min,max) {
   		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+	function characterToArduino(letter){
+		var character = null;
+
+		switch(letter){
+			case '←':
+				character = '4';
+				break;
+			case '↑':
+				character = '8';
+				break;
+			case '→':
+				character = '6';
+				break;
+			case '↓':
+				character = '2';
+				break;
+
+			case '↖':
+				character = '7';
+				break;
+			case '↗':
+				character = '9';
+				break;
+			case '↘':
+				character = '3';
+				break;
+			case '↙':
+				character = '1';
+				break;	
+			default:
+				character = letter;
+		}
+		return character;
 	}
 
 	function drawBoundary() {
@@ -377,7 +417,7 @@
 				if(asteroids[i].letter == letterPressed && !asteroids[i].isDestroyed) {
 					asteroids[i].isDestroyed = true;
 					score+=1
-					send_deq();
+					send_dequeue();
 					successSound.play();
 					break;
 				}
