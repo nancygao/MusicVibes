@@ -76,7 +76,7 @@
 
 	//Falling asteroid class
 	FallingAsteroid = function(prop){
-      this.x = rand((ctx.canvas.width*.017)+(star.width*.4)+(asteroid.width/2), ctx.canvas.width*.87-asteroid.width);
+      this.x = rand((ctx.canvas.width*.017)+asteroid.width, ctx.canvas.width*.87);
       this.y = 0;
       this.isDestroyed = false;
       this.h = asteroid_height;
@@ -91,6 +91,7 @@
     FallingAsteroid.prototype.drop = function() {
 	  // Manipulate Icon properties
 	  if(this.y > asteroid_y_boundary) { // (if has dropped)
+	  	send_deq();
 	  	failureSound.play();
 	  	strikes+=1
 
@@ -98,6 +99,7 @@
 	  			isPlaying = false;
 
 	  			gameOverSound.play();
+	  			send_clear();
 
 				var gameOverMessage = canvas.getContext("2d");	
 
@@ -167,9 +169,11 @@
 		$(document).bind('keydown',function(e){
 			if(e.keyCode == 27) {
 				score=0;
-				asteroids.Clear;
-
 				isPlaying=false;
+
+				asteroids.Clear;
+				redraw();
+
 		       	$("canvas#myCanvas").hide();
 				$("div#container").show();
 		    }
@@ -210,6 +214,7 @@
 
 	function spawnNewAsteroid() {
 		newFallingAsteroid = new FallingAsteroid();
+		send_enq(newFallingAsteroid.letter);
 		asteroids.push(newFallingAsteroid);
 	}
 
@@ -372,6 +377,7 @@
 				if(asteroids[i].letter == letterPressed && !asteroids[i].isDestroyed) {
 					asteroids[i].isDestroyed = true;
 					score+=1
+					send_deq();
 					successSound.play();
 					break;
 				}
