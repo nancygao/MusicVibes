@@ -28,8 +28,9 @@
 
 
 <audio autoplay="autoplay" controls loop style="display:none;">
-     <source src="http://www.televisiontunes.com/uploads/audio/Star%20Wars.mp3" />     
+     <source src="/spaceMusic.mp3"/>     
  </audio>
+
 
 <canvas id="myCanvas" style="background-image:url('planet.jpg');
 							 background-size: cover;"></canvas> 
@@ -41,8 +42,8 @@
 	//global constants
 	var RAD = Math.PI/180;
 	
-	var KEY_SET = null;
-	var KEY_MAPPING = null;
+	var KEY_SET = [];
+	var KEY_MAPPING = [];
 	//left=4 : up=8 : right:6 : down:2 ** arrow keys will also work
 
 	//fetch and adjust canvas context, also bind keylisteners and difficulty setting
@@ -50,19 +51,88 @@
 	var ctx = canvas.getContext("2d");
 	ctx.canvas.width  = window.innerWidth;
 	ctx.canvas.height = window.innerHeight;
+
+	var readyToPlay = false;
+	var isPlaying = false;
+
 	document.addEventListener("keyup", destroyAsteroidAttempt, false);
 	var current_difficulty = 10; //10 is the easiest and 1 is the hardest
 	var score = 0;
+	var strikes =0;
 
 	//fetching asteroid image and caching to decrease latency
 	var asteroid = new Image();
 	var is_asteroid_cached = false;
 	var fire = new Image();
 
-	var readyToPlay = false;
+	//sound effects
+	var successSound = new Audio('explosionSound.wav');
+	successSound.volume = .5;
+	var failureSound = new Audio('missedAsteroid.wav')
+	var gameOverSound = new Audio('failureSound.mp3');
 
+
+	//Falling asteroid class
+	FallingAsteroid = function(prop){
+      this.x = rand(ctx.canvas.width*.05, ctx.canvas.width*.95);
+      this.y = 0;
+      this.isDestroyed = false;
+      this.h = asteroid_height;
+      this.w = asteroid_width;
+      this.angle = rand(0, 360);
+      this.speed = rand(1, 1);
+      this.letter = KEY_SET[rand(0, KEY_SET.length-1)];
+      this.asteroid_image = asteroid;
+      return this;
+    };
+
+    FallingAsteroid.prototype.drop = function() {
+	  // Manipulate Icon properties
+	  if(this.y > asteroid_y_boundary) { // (if has dropped)
+	  	//THIS IS WHERE ALL VIBRATORS SHOULD BE RELEASED AND WE INFORM THE USER THAT THE GAME IS OVER
+	  	failureSound.play();
+	  	strikes+=1
+
+	  	if (strikes>=3){
+	  		//alert("game over! :("+strikes);
+	  			isPlaying = false;
+
+	  			gameOverSound.play();
+
+				var gameOverMessage = canvas.getContext("2d");	
+
+	  			gameOverMessage.font = "150px Arial Black";
+	  			gameOverMessage.globalCompositeOperation="destination-over";
+	  			gameOverMessage.fillStyle = "red"; 
+	  			gameOverMessage.fillText("GAME OVER", canvas.width/8.6, canvas.height/2);
+
+
+	  	}
+
+	  	this.y = 0; // restart from top
+	    this.x = rand(ctx.canvas.width*.05, ctx.canvas.width*.95); // new X position
+	    this.speed = rand(1, 4); // new random speed
+	  }
+
+	  this.y += this.speed;
+	  this.angle += this.speed % 360;
+
+	  // Manipulate context 
+	  ctx.save();                    // save context
+	  ctx.translate(this.x, this.y); // move to point
+	  ctx.rotate(this.angle * RAD);  // rotate around that point
+	  ctx.drawImage(this.asteroid_image, -(this.asteroid_image.width/2), -(this.asteroid_image.height/2));
+	  ctx.restore();
+
+	  ctx.save();
+	  ctx.translate(this.x, this.y);
+	  ctx.font = "40pt Calibri";
+      ctx.fillText(this.letter, 0, 0);
+      ctx.restore();
+	};
+
+	//game mode selection
 	$(document).ready(function(){
-
 
 		$("#myCanvas").hide();
 
@@ -72,7 +142,8 @@
 			KEY_SET = ["←", "↑", "→", "↓", "↖", "↗" ,"↘", "↙"];
 			KEY_MAPPING = { 52:"←",37:"←", 56:"↑", 38:"↑", 54:"→",39:"→", 50:"↓",40:"↓",
 							55:"↖",57:"↗",51:"↘",49:"↙"};
-			readyToPlay = true;
+			FallingAsteroid.letter = KEY_SET[rand(0, KEY_SET.length-1)];
+			isPlaying = true;
 		});
 
 		$("#demo-btn").click(function() {
@@ -80,8 +151,8 @@
 			$("canvas#myCanvas").show();
 			KEY_SET = ["←", "↑", "→", "↓"];
 			KEY_MAPPING = { 52:"←",37:"←", 56:"↑", 38:"↑", 54:"→",39:"→", 50:"↓",40:"↓"};
-			readyToPlay = true;
-
+			FallingAsteroid.letter = KEY_SET[rand(0, KEY_SET.length-1)];
+			isPlaying = true;
 		});
 
 		$("#braille-btn").click(function() {
@@ -91,7 +162,8 @@
 					  "R","S","T","U","V","W","X","Y","Z"];
 			KEY_MAPPING = {65:"A",66:"B",67:"C",68:"D",69:"E",70:"F",71:"G",72:"H",73:"I",74:"J",75:"K",76:"L",77:"M",78:"N",79:"O",80:"P",81:"Q",
 					  82:"R",83:"S",84:"T",85:"U",86:"V",87:"W",88:"X",89:"Y",90:"Z"};
-			readyToPlay = true;
+			isPlaying = true;
+			FallingAsteroid.letter = KEY_SET[rand(0, KEY_SET.length-1)];
 
 		});
 
@@ -122,47 +194,8 @@
 	var asteroid_height = 50;
 	var asteroid_radius = 20;
 	var current_rotation_degrees = 0;
-	//Falling asteroid class
-	FallingAsteroid = function(prop){
-      this.x = rand(ctx.canvas.width*.05, ctx.canvas.width*.95);
-      this.y = 0;
-      this.isDestroyed = false;
-      this.h = asteroid_height;
-      this.w = asteroid_width;
-      this.angle = rand(0, 360);
-      this.speed = rand(1, 1);
-      this.letter = KEY_SET[rand(0,KEY_SET.length-1)];
-      if (readyToPlay=true){
-      	 this.asteroid_image = asteroid;
-      }
-      return this;
-    };
 
-	FallingAsteroid.prototype.drop = function() {
-	  // Manipulate Icon properties
-	  if(this.y > asteroid_y_boundary) { // (if has dropped)
-	  	//THIS IS WHERE ALL VIBRATORS SHOULD BE RELEASED AND WE INFORM THE USER THAT THE GAME IS OVER
-	  	alert("game over! :(");
-	    this.y = 0; // restart from top
-	    this.x = rand(ctx.canvas.width*.05, ctx.canvas.width*.95); // new X position
-	    this.speed = rand(1, 4); // new random speed
-	  }
-	  this.y += this.speed;
-	  this.angle += this.speed % 360;
 
-	  // Manipulate context 
-	  ctx.save();                    // save context
-	  ctx.translate(this.x, this.y); // move to point
-	  ctx.rotate(this.angle * RAD);  // rotate around that point
-	  ctx.drawImage(this.asteroid_image, -(this.asteroid_image.width/2), -(this.asteroid_image.height/2));
-	  ctx.restore();
-
-	  ctx.save();
-	  ctx.translate(this.x, this.y);
-	  ctx.font = "40pt Calibri";
-      ctx.fillText(this.letter, 0, 0);
-      ctx.restore();
-	};
 
 	//set of all active asteroids
 	var asteroids = [];
@@ -175,25 +208,25 @@
 	}
 
 
-	function characterToArduino(letter){
-		var character = null;
+	// function characterToArduino(letter){
+	// 	var character = null;
 
-		switch(letter){
-			case '←':
-				character = '4';
-				break;
-			case '↑':6
-				character = '8';
-				break;
-			case '→':
-				character = '6';
-				break;
-			case '↓':
-				character = '2';
-				break;
-		}
-		return character;
-	}
+	// 	switch(letter){
+	// 		case '←':
+	// 			character = '4';
+	// 			break;
+	// 		case '↑':6
+	// 			character = '8';
+	// 			break;
+	// 		case '→':
+	// 			character = '6';
+	// 			break;
+	// 		case '↓':
+	// 			character = '2';
+	// 			break;
+	// 	}
+	// 	return character;
+	// }
 
 	function my_send(x){
 	    var xhttp = new XMLHttpRequest();
@@ -252,6 +285,8 @@
 		ctx.textBaseline = "top";
 		ctx.lineWidth = 0.1;
 	    ctx.fillText("Score: " + score , ctx.canvas.width*.05, asteroid_y_boundary*.06);
+	    ctx.fillText("Lives Left: " + 3-strikes , ctx.canvas.width*.05, asteroid_y_boundary*.02);
+
 	    ctx.restore();
 	    ctx.fillStyle = "#FFF";
 	}
@@ -284,8 +319,10 @@
 	//main game thread
 	function startMainRoutine() {
 		(function gameLoop() { 
-		  redraw();
-		  requestAnimationFrame(gameLoop);
+			if(isPlaying) {
+		  		redraw();
+		  	}
+		  	requestAnimationFrame(gameLoop);
 		}());
 	}
 
@@ -318,6 +355,7 @@
 				if(asteroids[i].letter == letterPressed && !asteroids[i].isDestroyed) {
 					asteroids[i].isDestroyed = true;
 					score+=1
+					successSound.play();
 					break;
 				}
 
