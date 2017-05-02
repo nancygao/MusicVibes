@@ -39,6 +39,11 @@ my_dict['x']= {1,3,5,7}
 my_dict['y']= {1,2,3,5,7}
 my_dict['z']= {2,3,5,7}
 
+temp = set(my_dict.keys())
+
+for a in temp:
+    my_dict[a.upper()] = my_dict[a]
+
 my_dict['up']= {0}
 my_dict['up_right']= {1}
 my_dict['right']= {2}
@@ -204,7 +209,6 @@ def listen():
             set_power(ser, byte)
         elif data == b'\x05':
             my_enqueue(ser, byte_queue, new_dict[chr(conn.recv(1)[0])])
-            print(byte_queue)
         elif data == b'\x06':
             my_dequeue(ser, byte_queue)
         elif data == b'':
