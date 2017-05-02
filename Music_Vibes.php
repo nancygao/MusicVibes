@@ -69,10 +69,10 @@ if($socket===false){
 	echo "OK.\n";
 }
 $result = socket_connect($socket, $address, $port);
-while($result === false){
+/*while($result === false){
     sleep(.1);
     $result = socket_connect($socket, $address, $port);
-}
+}*/
 
 socket_write($socket, $bytestream, strlen($bytestream));
 
