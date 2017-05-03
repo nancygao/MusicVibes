@@ -5,31 +5,31 @@ if(isset($_GET['Mode']) and in_array($_GET['Mode'], $checkVars)){
 	$mode = $_GET['Mode'];
 	switch ($mode) {
 	case "One":
-        if(isset($_GET['Data']) and $_GET['Data']!=''){
+        if(isset($_GET['Data']) and $_GET['Data']!='' and $GET['DATA']!='undefined'){
             $bytestream .= hex2bin("01");
             $bytestream .= $_GET['Data'];
         }
         break;
     case "Push":
-        if(isset($_GET['Data']) and $_GET['Data']!=''){
+        if(isset($_GET['Data']) and $_GET['Data']!='' and $GET['DATA']!='undefined'){
             $bytestream .= hex2bin("00");
             $bytestream .= $_GET['Data'];
         }
         break;
     case "Init":
-        if(isset($_GET['Data']) and $_GET['Data']!=''){
+        if(isset($_GET['Data']) and $_GET['Data']!='' and $GET['DATA']!='undefined'){
             $bytestream .= hex2bin("02");
             $bytestream .= $_GET['Data'];
         }
         break;
     case "Lower":
-        if(isset($_GET['Data']) and $_GET['Data']!=''){
+        if(isset($_GET['Data']) and $_GET['Data']!='' and $GET['DATA']!='undefined'){
             $bytestream .= hex2bin("03");
             $bytestream .= $_GET['Data'];
         }
         break;
     case "Enqueue":
-        if(isset($_GET['Data']) and $_GET['Data']!=''){
+        if(isset($_GET['Data']) and $_GET['Data']!='' and $GET['DATA']!='undefined'){
             $bytestream .= hex2bin("05");
             $bytestream .= $_GET['Data'];
         }
@@ -47,7 +47,7 @@ if(isset($_GET['Mode']) and in_array($_GET['Mode'], $checkVars)){
         }
         break;
     case "Clear":
-        $bytestream .= hex2bin("0100");
+        $bytestream .= hex2bin("01")."0";
         break;
     case "Term":
         $bytestream .= hex2bin("FF");
@@ -56,30 +56,26 @@ if(isset($_GET['Mode']) and in_array($_GET['Mode'], $checkVars)){
         echo "FAILURE<br>";
 	}
 }
+if($bytestream!=''){
+    echo "$bytestream\n";
 
-echo "$bytestream\n";
+    $address = '127.0.0.1';
+    $port = 9874;
 
-$address = '127.0.0.1';
-$port = 9874;
-
-$socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-if($socket===false){
-	echo"socket_create() failed: reason: ".socket_strerror(socket_last_error())."\n";
-} else {
-	echo "OK.\n";
-}
-$result = socket_connect($socket, $address, $port);
-/*while($result === false){
-    sleep(.1);
+    $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+    if($socket===false){
+	   echo"socket_create() failed: reason: ".socket_strerror(socket_last_error())."\n";
+    } else {
+	   echo "OK.\n";
+    }
     $result = socket_connect($socket, $address, $port);
-}*/
+    while($result === false){
+        sleep(.1);
+        $result = socket_connect($socket, $address, $port);
+    }
 
-socket_write($socket, $bytestream, strlen($bytestream));
+    socket_write($socket, $bytestream, strlen($bytestream));
 
-socket_close($socket);
-
+    socket_close($socket);
+}
 ?>
-
-//if ($_SERVER['REQUEST_METHOD'] == "POST") {
-//
-//}

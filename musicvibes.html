@@ -14,7 +14,7 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-<body>
+<body onunload = "clear_wrapper()"6>
 
 	<div id="container">
           <h1 id="homepage-title">Music Vibes </h1>
@@ -61,8 +61,9 @@
 	var score = 0;
 	var strikes =0;
 
-	//fetching asteroid image and caching to decrease latency
+	// fetching asteroid image and caching to decrease latency
 	var asteroid = new Image();
+
 	var is_asteroid_cached = false;
 	var fire = new Image();
 	var star = new Image();
@@ -74,6 +75,13 @@
 	var failureSound = new Audio('missedAsteroid.wav')
 	var gameOverSound = new Audio('failureSound.mp3');
 
+	var msg; 
+	var sayletter = false;
+
+	var power = 127;
+
+	//set intial power of motor
+	set_power(power);
 
 	//Falling asteroid class
 	FallingAsteroid = function(prop){
@@ -83,9 +91,13 @@
       this.h = asteroid_height;
       this.w = asteroid_width;
       this.angle = rand(0, 360);
-      this.speed = rand(1, 1);
+      this.speed = 1;
       this.letter = KEY_SET[rand(0, KEY_SET.length-1)];
       this.asteroid_image = asteroid;
+      msg = new SpeechSynthesisUtterance(this.letter);
+      	if(isPlaying && sayletter){
+      		window.speechSynthesis.speak(msg);
+      	}
       return this;
     };
 
@@ -110,9 +122,11 @@
 	  			gameOverMessage.fillText("GAME OVER", canvas.width/8.6, canvas.height/1.6);
 	  	}
 
-	  	this.y = 0; // restart from top
-	    this.x = rand((ctx.canvas.width*.017)+(star.width*.4)+(asteroid.width/2), ctx.canvas.width*.87-asteroid.width); // new X position
-	    this.speed = 1; 
+	  	asteroids.splice(0,1);
+
+	  	// this.y = 0; // restart from top
+	   //  this.x = rand((ctx.canvas.width*.017)+(star.width*.4)+(asteroid.width/2), ctx.canvas.width*.87-asteroid.width); // new X position
+	   //  this.speed = 1; 
 	  }
 
 	  this.y += this.speed;
@@ -128,7 +142,7 @@
 	  ctx.save();
 	  ctx.translate(this.x, this.y);
 	  ctx.font = "40pt Calibri";
-      ctx.fillText(this.letter, 0, 0);
+      ctx.fillText(this.letter, -15, 10);
       ctx.restore();
 	};
 
@@ -147,6 +161,8 @@
 							55:"↖",57:"↗",51:"↘",49:"↙"};
 			FallingAsteroid.letter = KEY_SET[rand(0, KEY_SET.length-1)];
 			isPlaying = true;
+			startMainRoutine();
+
 		});
 
 		$("#demo-btn").click(function() {
@@ -159,6 +175,8 @@
 			FallingAsteroid.letter = KEY_SET[rand(0, KEY_SET.length-1)];
 			isPlaying = true;
 			isDemoMode = true;
+			startMainRoutine();
+
 		});
 
 		$("#braille-btn").click(function() {
@@ -171,47 +189,86 @@
 					  82:"R",83:"S",84:"T",85:"U",86:"V",87:"W",88:"X",89:"Y",90:"Z"};
 			isPlaying = true;
 			FallingAsteroid.letter = KEY_SET[rand(0, KEY_SET.length-1)];
+			sayletter = true;
+			startMainRoutine();
 		});
 
 		$(document).bind('keydown',function(e){
+			//escape goes back to homepage and ends game
 			if(e.keyCode == 27) {
 				score=0;
-				isPlaying=false;
 
 				ctx.clearRect(0,0,canvas.width, canvas.height)
 				asteroids = [];
 				redraw();
+				send_clear();
+				current_difficulty = 10; //sets difficulty back to easy
+				sayletter = false;
 
-		       	$("canvas#myCanvas").hide();
-				$("div#container").show();
+				location.reload();
+
+		//      $("canvas#myCanvas").hide();
+		// 		$("div#container").show();
+
+				isPlaying=false;
+
 		    }
+
+			//space bar pauses game
 			if(e.keyCode == 32){ //space
 		       //isPlaying=false;
 			   	isPaused =!isPaused;
 
 		       	if(isPaused){
 					isPlaying = false;
+					set_power(0);
 		       	} else{
 					isPlaying = true;
+					set_power(power);
 		       	}
 		    }
+
+			//delete = help mode for braille
+			if(e.keyCode == 8){
+				sayletter = !sayletter;
+			}
+
+			//"-" increases motor power by 10, yes we know it's backwards
+			if(e.keyCode == 109){
+				power +=25;
+				if(power<=255){
+					set_power(power);
+				}
+			}
+
+			//"+" decrements motor power by 10
+			if(e.keyCode == 107){
+				power -=25;
+				if(power>=10) {
+					set_power(power);
+				}
+			}
 		});
 	});
+
+	window.onunload = function(){
+		clear_wrapper();
+	}
 
 	asteroid.onload = function() {
 		if(!is_asteroid_cached){
 			fire.onload = function() {
 				is_asteroid_cached = true;
-				startMainRoutine();
+				//startMainRoutine();
 				setSpawnRate();
 			}
 		}
 	}
 
-	asteroid.src = "asteroid.png";
 	fire.src = "fireball.png";
 	star.src = "bright2.png";
 	earth.src = "earth.png";
+	asteroid.src = "asteroid.png";
 
 
 	//set boundary for asteroid detection
@@ -231,9 +288,11 @@
 
 
 	function spawnNewAsteroid() {
-		newFallingAsteroid = new FallingAsteroid();
-		send_enqueue(newFallingAsteroid.letter);
-		asteroids.push(newFallingAsteroid);
+		if (isPlaying){
+			newFallingAsteroid = new FallingAsteroid();
+			send_enqueue(characterToArduino(newFallingAsteroid.letter));
+			asteroids.push(newFallingAsteroid);
+		}
 	}
 
 	function my_send(x){
@@ -271,6 +330,11 @@
 	    my_send("?Mode=Dequeue");
 	}
 
+	function clear_wrapper(){
+		send_clear();
+		return null;
+	}
+
 	//random number generator
 	function rand(min,max) {
   		return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -305,6 +369,7 @@
 			case '↙':
 				character = '1';
 				break;	
+
 			default:
 				character = letter;
 		}
@@ -330,10 +395,10 @@
 		ctx.closePath();
 		ctx.save();
 		ctx.font = "20pt Calibri";
-		ctx.fillStyle = "#0F0";
+		ctx.fillStyle = "#FFF";
 		ctx.textBaseline = "middle";
 		ctx.lineWidth = 0.1;
-	    ctx.fillText("  'esc'", canvas.width*.88, (canvas.width*.01+earth.height/2));
+	    ctx.fillText("Home", canvas.width*.8856, (canvas.width*.01+earth.height/2));
 	    ctx.restore();
 	}
 
@@ -414,7 +479,7 @@
 			var letter_asteroid_collisions;
 
 			for(i in asteroids) {
-				if(asteroids[i].letter == letterPressed && !asteroids[i].isDestroyed) {
+				if(asteroids[i].letter == letterPressed && !asteroids[i].isDestroyed && i==0) {
 					asteroids[i].isDestroyed = true;
 					score+=1
 					send_dequeue();

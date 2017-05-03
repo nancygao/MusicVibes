@@ -65,6 +65,8 @@ my_dict['7']= {7}
 
 my_dict['5'] = {0,1,2,3,4,5,6,7}
 
+my_dict['0'] = {}
+
 new_dict = {}
 for a in my_dict.keys():
     new_dict[a] = set_to_hex(my_dict[a])
@@ -73,7 +75,7 @@ ports = list(serial.tools.list_ports.comports())
 ser = serial.Serial()
 ser.baudrate = 9600
 for p in ports:
-    if 'Arduino Leonardo' in p.description:
+    if 'Arduino' in p.description:
         ser.port = p.device
         break
 
@@ -188,6 +190,7 @@ def listen():
         elif data==b'\x01':
             try:
                 byte = new_dict[chr(conn.recv(1)[0])]
+                byte_queue = []
                 ser_only_one(ser, byte)
             except:
                 print('Key not found in dictionary', file=sys.stderr)
