@@ -222,6 +222,12 @@ def listen():
     ser_term(ser)
     s.close()
 
+def braille_test():
+    for char in 'abcdefghijklmnopqrstuvwxyz':
+        ser_only_one(ser, new_dict[char])
+        input()
+    ser_term(ser)
+
 def queue_test():
     byte_queue = []
     my_enqueue(ser, byte_queue, new_dict['up'])
@@ -242,5 +248,6 @@ def queue_test():
 #motor_test()
 #settings_test()
 listen()
+#braille_test()
 #ser_term(ser)
 #queue_test()

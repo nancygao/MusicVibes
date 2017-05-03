@@ -27,9 +27,9 @@
       
 
 
-<audio autoplay="autoplay" controls loop style="display:none;">
+<!--<audio autoplay="autoplay" controls loop style="display:none;">
      <source src="spaceMusic.mp3"/>     
- </audio>
+ </audio>  -->
 
 
 <canvas id="myCanvas" style="background-image:url('planet.jpg');
@@ -234,7 +234,7 @@
 			}
 
 			//"-" increases motor power by 10, yes we know it's backwards
-			if(e.keyCode == 109){
+			if(e.keyCode == 107){ //actually 109
 				power +=25;
 				if(power<=255){
 					set_power(power);
@@ -242,7 +242,7 @@
 			}
 
 			//"+" decrements motor power by 10
-			if(e.keyCode == 107){
+			if(e.keyCode == 109){ //107
 				power -=25;
 				if(power>=10) {
 					set_power(power);
